@@ -1,13 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-if (! defined('CLEANER_VERSION'))
-{
-    // get the version from config.php
-    require PATH_THIRD.'cleaner/config.php';
-    define('CLEANER_VERSION', $config['version']);
-    define('CLEANER_NAME', $config['name']);
-    define('CLEANER_DESC', $config['description']);
-}
+require PATH_THIRD.'cleaner/config.php';
 
 /**
  * ExpressionEngine Extension Class
@@ -16,7 +9,7 @@ if (! defined('CLEANER_VERSION'))
  * @subpackage  Extensions
  * @category    Cleaner
  * @author      Brian Litzinger
- * @copyright   Copyright 2011 - Brian Litzinger
+ * @copyright   Copyright 2010 - Brian Litzinger
  * @link        http://boldminded.com/add-ons/cleaner
  */
  
@@ -27,7 +20,7 @@ class Cleaner_ext {
     var $version        = CLEANER_VERSION;
     var $description    = CLEANER_DESC;
     var $settings_exist = 'y';
-    var $docs_url       = 'http://boldminded.com/add-ons/cleaner';
+    var $docs_url       = CLEANER_DOCS_URL;
     
     /**
      * Constructor
@@ -66,7 +59,14 @@ class Cleaner_ext {
     {
         $settings['cleaner_xss_clean'] = array('s', array('no' => 'No', 'yes' => 'Yes'), 'no');
         $settings['cleaner_html_clean'] = array('s', array('no' => 'No', 'yes' => 'Yes'), 'no');
-        $settings['cleaner_allow_tags'] = array('t', '', '');
+        $settings['cleaner_allow_tags_in_post'] = '';
+        
+        $settings['cleaner_allow_attr_in_template'] = 'href, class, src, rel, width, height';
+        $settings['cleaner_allow_tags_in_template'] = 'img, h1, h2, h3, h4, h5, blockquote, strong, em, p, b, a, i, ul, li, ol, br';
+        
+        $settings['cleaner_enable_wyvern'] = array('s', array('no' => 'No', 'yes' => 'Yes'), 'no');
+        $settings['cleaner_allow_attr_in_wyvern'] = 'href, class, src, rel, width, height';
+        $settings['cleaner_allow_tags_in_wyvern'] = 'img, h1, h2, h3, h4, h5, blockquote, strong, em, p, b, a, i, ul, li, ol, br';
         
         return $settings;
     }
@@ -126,7 +126,7 @@ class Cleaner_ext {
             return $str;
         }
         
-        $allowed = (isset($this->settings['cleaner_allow_tags']) AND $this->settings['cleaner_allow_tags'] != '') ? explode("\n", $this->settings['cleaner_allow_tags']) : false;
+        $allowed = (isset($this->settings['cleaner_allow_tags_in_post']) AND $this->settings['cleaner_allow_tags_in_post'] != '') ? explode(',', $this->settings['cleaner_allow_tags_in_post']) : false;
         
         // If no allowed tags are defined, remove them all.
         if(!$allowed)
