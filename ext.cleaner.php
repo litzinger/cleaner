@@ -22,6 +22,17 @@ class Cleaner_ext {
     var $settings_exist = 'y';
     var $docs_url       = CLEANER_DOCS_URL;
     
+    var $default_settings = array(
+        'cleaner_xss_clean' => 'no',
+        'cleaner_html_clean' => 'no',
+        'cleaner_allow_tags_in_post' => '',
+        'cleaner_allow_attr_in_template' => 'href, class, src, rel, width, height',
+        'cleaner_allow_tags_in_template' => 'img, h1, h2, h3, h4, h5, blockquote, strong, em, p, b, a, i, ul, li, ol, br',
+        'cleaner_enable_wyvern' => 'no',
+        'cleaner_allow_attr_in_wyvern' => 'href, class, src, rel, width, height',
+        'cleaner_allow_tags_in_wyvern' => 'img, h1, h2, h3, h4, h5, blockquote, strong, em, p, b, a, i, ul, li, ol, br'
+    );
+    
     /**
      * Constructor
      */
@@ -57,16 +68,16 @@ class Cleaner_ext {
     
     function settings()
     {
-        $settings['cleaner_xss_clean'] = array('s', array('no' => 'No', 'yes' => 'Yes'), 'no');
-        $settings['cleaner_html_clean'] = array('s', array('no' => 'No', 'yes' => 'Yes'), 'no');
-        $settings['cleaner_allow_tags_in_post'] = '';
+        $settings['cleaner_xss_clean'] = array('s', array('no' => 'No', 'yes' => 'Yes'), $this->default_settings['cleaner_xss_clean']);
+        $settings['cleaner_html_clean'] = array('s', array('no' => 'No', 'yes' => 'Yes'), $this->default_settings['cleaner_html_clean']);
+        $settings['cleaner_allow_tags_in_post'] = $this->default_settings['cleaner_allow_tags_in_post'];
         
-        $settings['cleaner_allow_attr_in_template'] = 'href, class, src, rel, width, height';
-        $settings['cleaner_allow_tags_in_template'] = 'img, h1, h2, h3, h4, h5, blockquote, strong, em, p, b, a, i, ul, li, ol, br';
+        $settings['cleaner_allow_attr_in_template'] = $this->default_settings['cleaner_allow_attr_in_template'];
+        $settings['cleaner_allow_tags_in_template'] = $this->default_settings['cleaner_allow_tags_in_template'];
         
-        $settings['cleaner_enable_wyvern'] = array('s', array('no' => 'No', 'yes' => 'Yes'), 'no');
-        $settings['cleaner_allow_attr_in_wyvern'] = 'href, class, src, rel, width, height';
-        $settings['cleaner_allow_tags_in_wyvern'] = 'img, h1, h2, h3, h4, h5, blockquote, strong, em, p, b, a, i, ul, li, ol, br';
+        $settings['cleaner_enable_wyvern'] = array('s', array('no' => 'No', 'yes' => 'Yes'), $this->default_settings['cleaner_enable_wyvern']);
+        $settings['cleaner_allow_attr_in_wyvern'] = $this->default_settings['cleaner_allow_attr_in_wyvern'];
+        $settings['cleaner_allow_tags_in_wyvern'] = $this->default_settings['cleaner_allow_tags_in_wyvern'];
         
         return $settings;
     }
@@ -82,7 +93,7 @@ class Cleaner_ext {
         // Add new hooks
         $ext_template = array(
             'class'    => __CLASS__,
-            'settings' => '',
+            'settings' => serialize($this->default_settings),
             'priority' => 1, // Needs to be first
             'version'  => $this->version,
             'enabled'  => 'y'
