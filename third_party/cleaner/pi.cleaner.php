@@ -61,6 +61,7 @@ class Cleaner {
         $config->set('HTML.AllowedElements', $allowed_tags);
         $config->set('AutoFormat.RemoveEmpty', true); // remove empty tag pairs
         $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true); // remove empty, even if it contains an &nbsp;
+        $config->set('Cache.SerializerPath', APPPATH . 'cache/htmlpurifier');
 
         $this->purifier = new HTMLPurifier($config);
     }
