@@ -61,7 +61,22 @@ class Cleaner {
         $config->set('HTML.AllowedElements', $allowed_tags);
         $config->set('AutoFormat.RemoveEmpty', true); // remove empty tag pairs
         $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true); // remove empty, even if it contains an &nbsp;
-        $config->set('Cache.SerializerPath', APPPATH . 'cache/htmlpurifier');
+        $config->set('AutoFormat.AutoParagraph', true); // remove empty tag pairs
+
+        $cache_path = APPPATH . 'cache/htmlpurifier';
+
+        // Make sure our cache folder exists.
+        if ( ! is_dir($cache_path))
+        {
+            if(mkdir($cache_path, DIR_WRITE_MODE, TRUE))
+            {
+                $config->set('Cache.SerializerPath', $cache_path);
+            }
+        }
+        else
+        {
+            $config->set('Cache.SerializerPath', $cache_path);
+        }
 
         $this->purifier = new HTMLPurifier($config);
     }
@@ -69,8 +84,10 @@ class Cleaner {
     function clean($str = '')
     {
         if ($str == '')
+        {
             $str = $this->EE->TMPL->tagdata;
-            
+        }
+
         try 
         {
             $str = $this->purifier->purify($str);
@@ -109,6 +126,17 @@ class Cleaner {
         }
         
         $this->return_data = $str;
+
+        // Optionally update the database with the cleaned data. 
+        // After this is done you can basically remove this plugin entirely.
+        $update_field = $this->EE->TMPL->fetch_param('update_field');
+        $entry_id = $this->EE->TMPL->fetch_param('entry_id');
+
+        if ($update_field AND $entry_id)
+        {
+            $this->EE->db->where('entry_id', $entry_id)
+                         ->update('channel_data', array($update_field => $str));
+        }
         
         return $this->return_data;
     }
