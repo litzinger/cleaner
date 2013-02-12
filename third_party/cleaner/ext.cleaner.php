@@ -158,6 +158,26 @@ class Cleaner_ext {
             $config->set('AutoFormat.RemoveEmpty', true); // remove empty tag pairs
             $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true); // remove empty, even if it contains an &nbsp;
 
+            $cache_path = APPPATH . 'cache/htmlpurifier';
+
+            // Make sure our cache folder exists.
+            if ( ! is_dir($cache_path))
+            {
+                if( ! is_writable($cache_path))
+                {
+                    show_error('Please make the following directory writable: '.$cache_path);
+                }
+
+                if(mkdir($cache_path, DIR_WRITE_MODE, TRUE))
+                {
+                    $config->set('Cache.SerializerPath', $cache_path);
+                }
+            }
+            else
+            {
+                $config->set('Cache.SerializerPath', $cache_path);
+            }
+
             $purifier = new HTMLPurifier($config);
             
             return $purifier->purify($str);

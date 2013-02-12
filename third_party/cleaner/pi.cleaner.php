@@ -68,6 +68,11 @@ class Cleaner {
         // Make sure our cache folder exists.
         if ( ! is_dir($cache_path))
         {
+            if( ! is_writable($cache_path))
+            {
+                show_error('Please make the following directory writable: '.$cache_path);
+            }
+
             if(mkdir($cache_path, DIR_WRITE_MODE, TRUE))
             {
                 $config->set('Cache.SerializerPath', $cache_path);
